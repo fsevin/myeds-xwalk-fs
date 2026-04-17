@@ -51,6 +51,12 @@
           "valueType": "string",
           "name": "accessToken",
           "label": "Access Token (Bearer)"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "selectedImageUrl",
+          "label": "Selected Image URL"
         }
       ]
     }

@@ -1,86 +1,104 @@
-.firefly-ui {
+/* ── Publish view ─────────────────────────────── */
+.firefly-figure {
+  margin: 0;
+}
+
+.firefly-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+/* ── Author view ──────────────────────────────── */
+.firefly-author-ui {
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px;
+  border: 2px dashed #f8872b;
+  border-radius: 10px;
+  background: #fffaf6;
   font-family: var(--body-font-family, sans-serif);
 }
 
-/* Header row: prompt label + button */
-.firefly-header {
+.firefly-author-header {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.firefly-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f8872b;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .firefly-prompt-display {
   flex: 1;
   margin: 0;
-  font-size: var(--body-font-size-m, 1rem);
-  color: var(--text-color, #333);
+  font-size: var(--body-font-size-s, 0.875rem);
+  color: #555;
   font-style: italic;
 }
 
 .firefly-generate-btn {
   white-space: nowrap;
-  padding: 10px 22px;
+  padding: 9px 20px;
   font-size: var(--body-font-size-s, 0.875rem);
   font-weight: 600;
   cursor: pointer;
   border-radius: 8px;
   border: none;
-  background: var(--link-color, #0066cc);
+  background: #f8872b;
   color: #fff;
   transition: background 0.2s, opacity 0.2s;
 }
 
-.firefly-generate-btn:hover:not(:disabled) {
-  background: var(--link-hover-color, #0052a3);
-}
-
-.firefly-generate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.firefly-generate-btn:hover:not(:disabled) { background: #e0711c; }
+.firefly-generate-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Loading */
 .firefly-loading {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 0;
-  color: var(--text-color, #555);
+  gap: 10px;
+  padding: 12px 0;
+  font-size: var(--body-font-size-s, 0.875rem);
+  color: #555;
 }
 
 .firefly-spinner {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid var(--dark-color, #ccc);
-  border-top-color: var(--link-color, #0066cc);
+  width: 18px;
+  height: 18px;
+  border: 3px solid #eee;
+  border-top-color: #f8872b;
   border-radius: 50%;
   flex-shrink: 0;
-  animation: firefly-spin 0.8s linear infinite;
+  animation: ff-spin 0.8s linear infinite;
 }
 
-@keyframes firefly-spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes ff-spin { to { transform: rotate(360deg); } }
 
-/* Pick label */
 .firefly-pick-label {
-  margin: 0 0 12px;
-  font-weight: 600;
+  margin: 0 0 10px;
   font-size: var(--body-font-size-s, 0.875rem);
-  color: var(--text-color, #333);
+  font-weight: 600;
 }
 
-/* 2×2 grid of image options */
+/* 2×2 grid → 4×1 on wide */
 .firefly-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .firefly-option {
@@ -95,14 +113,13 @@
 }
 
 .firefly-option:hover {
-  border-color: var(--link-color, #0066cc);
+  border-color: #f8872b;
   transform: scale(1.02);
 }
 
 .firefly-option img {
   display: block;
   width: 100%;
-  height: auto;
   aspect-ratio: 1;
   object-fit: cover;
 }
@@ -110,56 +127,87 @@
 .firefly-option-label {
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 6px;
-  background: rgba(0, 0, 0, 0.55);
+  inset-inline: 0;
+  padding: 5px;
+  background: rgba(0,0,0,0.55);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   text-align: center;
   opacity: 0;
   transition: opacity 0.2s;
 }
 
-.firefly-option:hover .firefly-option-label {
-  opacity: 1;
-}
+.firefly-option:hover .firefly-option-label { opacity: 1; }
 
 /* Selected image */
-.firefly-selected-figure {
-  margin: 0 0 16px;
-}
+.firefly-selected-wrap { margin-top: 4px; }
 
-.firefly-selected-figure img {
+.firefly-selected-img {
   width: 100%;
   height: auto;
   border-radius: 8px;
-  border: 1px solid var(--dark-color, #ccc);
+  border: 2px solid #f8872b;
   display: block;
+  margin-bottom: 10px;
 }
 
 .firefly-selected-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-.firefly-regenerate {
-  padding: 10px 20px;
+.firefly-btn-secondary {
+  padding: 7px 16px;
   font-size: var(--body-font-size-s, 0.875rem);
   font-weight: 600;
   cursor: pointer;
   border-radius: 8px;
-  border: 2px solid var(--link-color, #0066cc);
+  border: 2px solid #f8872b;
   background: transparent;
-  color: var(--link-color, #0066cc);
+  color: #f8872b;
+  text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
 
-.firefly-regenerate:hover {
-  background: var(--link-color, #0066cc);
+.firefly-btn-secondary:hover {
+  background: #f8872b;
   color: #fff;
+}
+
+.firefly-persist-hint {
+  font-size: 0.78rem;
+  color: #888;
+  margin: 0;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 6px;
+}
+
+/* Current image preview */
+.firefly-current {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #f8872b;
+}
+
+.firefly-current-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #888;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.firefly-current img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 8px;
+  opacity: 0.8;
 }
 
 /* Error */
@@ -167,13 +215,12 @@
   color: #c0392b;
   background: #fdf0ef;
   border: 1px solid #e74c3c;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 8px;
   margin: 0;
+  font-size: var(--body-font-size-s, 0.875rem);
 }
 
 @media (width >= 600px) {
-  .firefly-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .firefly-grid { grid-template-columns: repeat(4, 1fr); }
 }

@@ -211,6 +211,12 @@
         "valueType": "string",
         "name": "apiKey",
         "label": "OpenAI API Key"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "selectedImageUrl",
+        "label": "Selected Image URL"
       }
     ]
   },
@@ -274,6 +280,12 @@
         "valueType": "string",
         "name": "accessToken",
         "label": "Access Token (Bearer)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "selectedImageUrl",
+        "label": "Selected Image URL"
       }
     ]
   },

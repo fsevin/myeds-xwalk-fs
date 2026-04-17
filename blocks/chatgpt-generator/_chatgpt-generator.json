@@ -56,6 +56,12 @@
           "valueType": "string",
           "name": "apiKey",
           "label": "OpenAI API Key"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "selectedImageUrl",
+          "label": "Selected Image URL"
         }
       ]
     }

@@ -7,117 +7,148 @@ function getConfig(block) {
     size: block.dataset.size || '1024x1024',
     apiKey: block.dataset.apikey || meta('firefly-api-key'),
     accessToken: block.dataset.accesstoken || meta('firefly-access-token'),
+    selectedImageUrl: block.dataset.selectedimageurl || '',
   };
 }
 
-function storageKey(prompt) {
-  return `firefly-selected:${prompt}`;
+// Detect Universal Editor author environment
+function isAuthorMode() {
+  return window !== window.top
+    || document.documentElement.classList.contains('aue-body')
+    || !!document.querySelector('[data-aue-resource]');
 }
 
-function renderSelected(container, url, prompt, onRegenerate) {
-  container.innerHTML = `
-    <figure class="firefly-selected-figure">
+function renderPublishView(block, url, prompt) {
+  block.innerHTML = `
+    <figure class="firefly-figure">
       <img src="${url}" alt="${prompt}">
     </figure>
-    <div class="firefly-selected-actions">
-      <a class="button" href="${url}" download="firefly-image.jpg">Download</a>
-      <button class="firefly-regenerate button secondary" type="button">Regenerate</button>
-    </div>
   `;
-  container.querySelector('.firefly-regenerate').addEventListener('click', onRegenerate);
 }
 
-function renderGrid(container, outputs, prompt, onSelect) {
-  container.innerHTML = `
-    <p class="firefly-pick-label">Select an image to use:</p>
-    <div class="firefly-grid">
-      ${outputs.map(({ image }, i) => `
-        <button class="firefly-option" data-url="${image.url}" type="button" aria-label="Use image ${i + 1}">
-          <img src="${image.url}" alt="${prompt} — option ${i + 1}" loading="lazy">
-          <span class="firefly-option-label">Use this</span>
-        </button>
-      `).join('')}
-    </div>
-  `;
-  container.querySelectorAll('.firefly-option').forEach((btn) => {
-    btn.addEventListener('click', () => onSelect(btn.dataset.url));
-  });
-}
-
-async function callFirefly(prompt, size, apiKey, accessToken) {
-  const [width, height] = size.split('x').map(Number);
-  const res = await fetch(FIREFLY_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'x-api-key': apiKey,
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ prompt, size: { width, height }, numVariations: 4 }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Firefly API error ${res.status}`);
-  }
-  return res.json();
-}
-
-export default function decorate(block) {
-  const { prompt, size, apiKey, accessToken } = getConfig(block);
+function renderAuthorView(block, config) {
+  const { prompt, size, apiKey, accessToken, selectedImageUrl } = config;
 
   block.innerHTML = `
-    <div class="firefly-ui">
-      <div class="firefly-header">
-        <p class="firefly-prompt-display">${prompt || '<em>No prompt set — open block properties to add one.</em>'}</p>
-        <button class="firefly-generate-btn button primary" type="button" ${!prompt ? 'disabled' : ''}>
+    <div class="firefly-author-ui">
+      <div class="firefly-author-header">
+        <span class="firefly-label">Firefly Generator</span>
+        <p class="firefly-prompt-display">${prompt || '<em>Set a prompt in block properties</em>'}</p>
+        <button class="firefly-generate-btn" type="button" ${!prompt ? 'disabled' : ''}>
           Generate Images
         </button>
       </div>
       <div class="firefly-status" aria-live="polite"></div>
       <div class="firefly-content"></div>
+      ${selectedImageUrl ? `
+        <div class="firefly-current">
+          <p class="firefly-current-label">Current image:</p>
+          <img src="${selectedImageUrl}" alt="${prompt}">
+        </div>` : ''}
     </div>
   `;
 
-  const generateBtn = block.querySelector('.firefly-generate-btn');
+  const btn = block.querySelector('.firefly-generate-btn');
   const status = block.querySelector('.firefly-status');
   const content = block.querySelector('.firefly-content');
 
-  const savedUrl = prompt ? localStorage.getItem(storageKey(prompt)) : null;
-  if (savedUrl) {
-    generateBtn.textContent = 'Regenerate';
-    renderSelected(content, savedUrl, prompt, () => startGeneration());
-  }
-
-  async function startGeneration() {
+  btn.addEventListener('click', async () => {
     if (!apiKey || !accessToken) {
       status.innerHTML = '<p class="firefly-error">API key or access token missing. Set them in block properties or as page &lt;meta&gt; tags.</p>';
       return;
     }
 
+    const [width, height] = size.split('x').map(Number);
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
     content.innerHTML = '';
-    generateBtn.disabled = true;
-    generateBtn.textContent = 'Generating…';
     status.innerHTML = '<div class="firefly-loading"><span class="firefly-spinner"></span> Generating 4 variations…</div>';
 
     try {
-      const data = await callFirefly(prompt, size, apiKey, accessToken);
-      const outputs = data.outputs || [];
-      if (!outputs.length) throw new Error('No images returned from Firefly.');
+      const res = await fetch(FIREFLY_API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'x-api-key': apiKey,
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ prompt, size: { width, height }, numVariations: 4 }),
+      });
 
-      status.innerHTML = '';
-      renderGrid(content, outputs, prompt, (url) => {
-        localStorage.setItem(storageKey(prompt), url);
-        generateBtn.textContent = 'Regenerate';
-        renderSelected(content, url, prompt, () => startGeneration());
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Firefly API error ${res.status}`);
+      }
+
+      const { outputs = [] } = await res.json();
+      if (!outputs.length) throw new Error('No images returned.');
+
+      status.innerHTML = '<p class="firefly-pick-label">Select an image to use:</p>';
+      content.innerHTML = `
+        <div class="firefly-grid">
+          ${outputs.map(({ image }, i) => `
+            <button class="firefly-option" data-url="${image.url}" type="button">
+              <img src="${image.url}" alt="${prompt} — option ${i + 1}" loading="lazy">
+              <span class="firefly-option-label">Use this</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+
+      content.querySelectorAll('.firefly-option').forEach((optBtn) => {
+        optBtn.addEventListener('click', () => {
+          const { url } = optBtn.dataset;
+          status.innerHTML = '';
+          content.innerHTML = `
+            <div class="firefly-selected-wrap">
+              <img class="firefly-selected-img" src="${url}" alt="${prompt}">
+              <div class="firefly-selected-actions">
+                <a class="firefly-btn-secondary" href="${url}" download="firefly-image.jpg">Download</a>
+                <button class="firefly-btn-secondary firefly-copy-btn" type="button" data-url="${url}">
+                  Copy URL
+                </button>
+              </div>
+              <p class="firefly-persist-hint">
+                To persist: paste this URL into <strong>Selected Image URL</strong> in block properties.
+              </p>
+            </div>
+          `;
+          content.querySelector('.firefly-copy-btn').addEventListener('click', (e) => {
+            navigator.clipboard.writeText(e.target.dataset.url);
+            e.target.textContent = 'Copied!';
+          });
+
+          // update current image preview
+          const current = block.querySelector('.firefly-current');
+          if (current) {
+            current.querySelector('img').src = url;
+          } else {
+            block.querySelector('.firefly-author-ui').insertAdjacentHTML('beforeend', `
+              <div class="firefly-current">
+                <p class="firefly-current-label">Current image:</p>
+                <img src="${url}" alt="${prompt}">
+              </div>
+            `);
+          }
+        });
       });
     } catch (err) {
       status.innerHTML = `<p class="firefly-error">Error: ${err.message}</p>`;
     } finally {
-      generateBtn.disabled = false;
-      if (generateBtn.textContent === 'Generating…') generateBtn.textContent = 'Generate Images';
+      btn.disabled = false;
+      btn.textContent = 'Generate Images';
     }
+  });
+}
+
+export default function decorate(block) {
+  const config = getConfig(block);
+
+  if (!isAuthorMode() && config.selectedImageUrl) {
+    renderPublishView(block, config.selectedImageUrl, config.prompt);
+    return;
   }
 
-  generateBtn.addEventListener('click', () => startGeneration());
+  renderAuthorView(block, config);
 }
