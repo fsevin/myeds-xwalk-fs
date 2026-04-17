@@ -1,51 +1,30 @@
-.firefly-generator-ui {
-  max-width: 800px;
+.firefly-ui {
+  max-width: 900px;
   margin: 0 auto;
   padding: 24px;
   font-family: var(--body-font-family, sans-serif);
 }
 
-.firefly-form {
+/* Header row: prompt label + button */
+.firefly-header {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.firefly-prompt {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: var(--body-font-size-m, 1rem);
-  font-family: inherit;
-  border: 2px solid var(--dark-color, #ccc);
-  border-radius: 8px;
-  resize: vertical;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.firefly-prompt:focus {
-  outline: none;
-  border-color: var(--link-color, #0066cc);
-}
-
-.firefly-controls {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+  align-items: flex-start;
+  gap: 16px;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-.firefly-size {
-  padding: 10px 14px;
-  font-size: var(--body-font-size-s, 0.875rem);
-  border: 2px solid var(--dark-color, #ccc);
-  border-radius: 8px;
-  background: var(--background-color, #fff);
-  cursor: pointer;
+.firefly-prompt-display {
+  flex: 1;
+  margin: 0;
+  font-size: var(--body-font-size-m, 1rem);
+  color: var(--text-color, #333);
+  font-style: italic;
 }
 
-.firefly-btn {
-  padding: 10px 24px;
+.firefly-generate-btn {
+  white-space: nowrap;
+  padding: 10px 22px;
   font-size: var(--body-font-size-s, 0.875rem);
   font-weight: 600;
   cursor: pointer;
@@ -56,11 +35,11 @@
   transition: background 0.2s, opacity 0.2s;
 }
 
-.firefly-btn:hover:not(:disabled) {
+.firefly-generate-btn:hover:not(:disabled) {
   background: var(--link-hover-color, #0052a3);
 }
 
-.firefly-btn:disabled {
+.firefly-generate-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -70,8 +49,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 24px 0;
-  color: var(--text-color, #333);
+  padding: 16px 0;
+  color: var(--text-color, #555);
 }
 
 .firefly-spinner {
@@ -81,6 +60,7 @@
   border: 3px solid var(--dark-color, #ccc);
   border-top-color: var(--link-color, #0066cc);
   border-radius: 50%;
+  flex-shrink: 0;
   animation: firefly-spin 0.8s linear infinite;
 }
 
@@ -88,29 +68,98 @@
   to { transform: rotate(360deg); }
 }
 
-/* Results */
-.firefly-results {
-  margin-top: 24px;
+/* Pick label */
+.firefly-pick-label {
+  margin: 0 0 12px;
+  font-weight: 600;
+  font-size: var(--body-font-size-s, 0.875rem);
+  color: var(--text-color, #333);
 }
 
-.firefly-result-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+/* 2×2 grid of image options */
+.firefly-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 24px;
 }
 
-.firefly-result-item img {
+.firefly-option {
+  position: relative;
+  padding: 0;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  transition: border-color 0.2s, transform 0.1s;
+}
+
+.firefly-option:hover {
+  border-color: var(--link-color, #0066cc);
+  transform: scale(1.02);
+}
+
+.firefly-option img {
+  display: block;
   width: 100%;
-  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.firefly-option-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.firefly-option:hover .firefly-option-label {
+  opacity: 1;
+}
+
+/* Selected image */
+.firefly-selected-figure {
+  margin: 0 0 16px;
+}
+
+.firefly-selected-figure img {
+  width: 100%;
   height: auto;
   border-radius: 8px;
   border: 1px solid var(--dark-color, #ccc);
+  display: block;
 }
 
-.firefly-result-item .button {
+.firefly-selected-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.firefly-regenerate {
+  padding: 10px 20px;
   font-size: var(--body-font-size-s, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid var(--link-color, #0066cc);
+  background: transparent;
+  color: var(--link-color, #0066cc);
+  transition: background 0.2s, color 0.2s;
+}
+
+.firefly-regenerate:hover {
+  background: var(--link-color, #0066cc);
+  color: #fff;
 }
 
 /* Error */
@@ -120,14 +169,11 @@
   border: 1px solid #e74c3c;
   padding: 12px 16px;
   border-radius: 8px;
+  margin: 0;
 }
 
 @media (width >= 600px) {
-  .firefly-controls {
-    flex-wrap: nowrap;
-  }
-
-  .firefly-btn {
-    white-space: nowrap;
+  .firefly-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

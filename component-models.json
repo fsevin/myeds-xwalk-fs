@@ -185,22 +185,41 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "apiKey",
-        "label": "Firefly API Key (Client ID)",
+        "name": "prompt",
+        "label": "Image Prompt",
         "required": true
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "size",
+        "label": "Image Size",
+        "options": [
+          {
+            "name": "Square (1024 × 1024)",
+            "value": "1024x1024"
+          },
+          {
+            "name": "Landscape (1792 × 1024)",
+            "value": "1792x1024"
+          },
+          {
+            "name": "Portrait (1024 × 1792)",
+            "value": "1024x1792"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "apiKey",
+        "label": "Firefly API Key (Client ID)"
       },
       {
         "component": "text",
         "valueType": "string",
         "name": "accessToken",
-        "label": "Access Token (Bearer)",
-        "required": true
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "placeholder",
-        "label": "Prompt placeholder text"
+        "label": "Access Token (Bearer)"
       }
     ]
   },

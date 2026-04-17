@@ -137,9 +137,8 @@
                 "template": {
                   "name": "Firefly Generator",
                   "model": "firefly-generator",
-                  "apiKey": "",
-                  "accessToken": "",
-                  "placeholder": "Describe the image you want to generate…"
+                  "prompt": "",
+                  "size": "1024x1024"
                 }
               }
             }
