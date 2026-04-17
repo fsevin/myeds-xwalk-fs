@@ -17,6 +17,25 @@ function isAuthorMode() {
     || !!document.querySelector('[data-aue-resource]');
 }
 
+async function fetchOneImage(prompt, size, quality, apiKey) {
+  const res = await fetch(OPENAI_API, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'dall-e-3', prompt, n: 1, size, quality,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `OpenAI API error ${res.status}`);
+  }
+  const data = await res.json();
+  return data.data[0].url;
+}
+
 function renderPublishView(block, url, prompt) {
   block.innerHTML = `
     <figure class="chatgpt-figure">
@@ -67,9 +86,8 @@ function renderAuthorView(block) {
     status.innerHTML = '<div class="chatgpt-loading"><span class="chatgpt-spinner"></span> Generating 4 variations…</div>';
 
     try {
-      const urls = await Promise.all(
-        Array.from({ length: 4 }, () => fetchOneImage(cfg.prompt, cfg.size, cfg.quality, cfg.apiKey)),
-      );
+      const generate = () => fetchOneImage(cfg.prompt, cfg.size, cfg.quality, cfg.apiKey);
+      const urls = await Promise.all(Array.from({ length: 4 }, generate));
 
       status.innerHTML = '<p class="chatgpt-pick-label">Select an image to use:</p>';
       content.innerHTML = `
@@ -124,23 +142,6 @@ function renderAuthorView(block) {
       btn.textContent = 'Generate Images';
     }
   });
-}
-
-async function fetchOneImage(prompt, size, quality, apiKey) {
-  const res = await fetch(OPENAI_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({ model: 'dall-e-3', prompt, n: 1, size, quality }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `OpenAI API error ${res.status}`);
-  }
-  const data = await res.json();
-  return data.data[0].url;
 }
 
 export default function decorate(block) {

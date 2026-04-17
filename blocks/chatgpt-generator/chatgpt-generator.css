@@ -62,8 +62,12 @@
   transition: background 0.2s, opacity 0.2s;
 }
 
+.chatgpt-generate-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .chatgpt-generate-btn:hover:not(:disabled) { background: #0d8c6d; }
-.chatgpt-generate-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* Loading */
 .chatgpt-loading {
@@ -129,7 +133,7 @@
   bottom: 0;
   inset-inline: 0;
   padding: 5px;
-  background: rgba(0,0,0,0.55);
+  background: rgb(0 0 0 / 55%);
   color: #fff;
   font-size: 0.72rem;
   font-weight: 600;
