@@ -180,6 +180,31 @@
     ]
   },
   {
+    "id": "firefly-generator",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "apiKey",
+        "label": "Firefly API Key (Client ID)",
+        "required": true
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "accessToken",
+        "label": "Access Token (Bearer)",
+        "required": true
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "placeholder",
+        "label": "Prompt placeholder text"
+      }
+    ]
+  },
+  {
     "id": "fragment",
     "fields": [
       {

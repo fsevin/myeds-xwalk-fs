@@ -1,0 +1,133 @@
+.firefly-generator-ui {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: var(--body-font-family, sans-serif);
+}
+
+.firefly-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.firefly-prompt {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: var(--body-font-size-m, 1rem);
+  font-family: inherit;
+  border: 2px solid var(--dark-color, #ccc);
+  border-radius: 8px;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.firefly-prompt:focus {
+  outline: none;
+  border-color: var(--link-color, #0066cc);
+}
+
+.firefly-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.firefly-size {
+  padding: 10px 14px;
+  font-size: var(--body-font-size-s, 0.875rem);
+  border: 2px solid var(--dark-color, #ccc);
+  border-radius: 8px;
+  background: var(--background-color, #fff);
+  cursor: pointer;
+}
+
+.firefly-btn {
+  padding: 10px 24px;
+  font-size: var(--body-font-size-s, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  background: var(--link-color, #0066cc);
+  color: #fff;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.firefly-btn:hover:not(:disabled) {
+  background: var(--link-hover-color, #0052a3);
+}
+
+.firefly-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading */
+.firefly-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  color: var(--text-color, #333);
+}
+
+.firefly-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--dark-color, #ccc);
+  border-top-color: var(--link-color, #0066cc);
+  border-radius: 50%;
+  animation: firefly-spin 0.8s linear infinite;
+}
+
+@keyframes firefly-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Results */
+.firefly-results {
+  margin-top: 24px;
+}
+
+.firefly-result-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.firefly-result-item img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--dark-color, #ccc);
+}
+
+.firefly-result-item .button {
+  font-size: var(--body-font-size-s, 0.875rem);
+}
+
+/* Error */
+.firefly-error {
+  color: #c0392b;
+  background: #fdf0ef;
+  border: 1px solid #e74c3c;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+@media (width >= 600px) {
+  .firefly-controls {
+    flex-wrap: nowrap;
+  }
+
+  .firefly-btn {
+    white-space: nowrap;
+  }
+}
