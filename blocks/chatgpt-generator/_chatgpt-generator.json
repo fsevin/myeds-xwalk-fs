@@ -1,0 +1,64 @@
+{
+  "definitions": [
+    {
+      "title": "ChatGPT Generator",
+      "id": "chatgpt-generator",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "ChatGPT Generator",
+              "model": "chatgpt-generator",
+              "prompt": "",
+              "size": "1024x1024",
+              "quality": "standard"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "chatgpt-generator",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "prompt",
+          "label": "Image Prompt",
+          "required": true
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "size",
+          "label": "Image Size",
+          "options": [
+            { "name": "Square (1024 × 1024)", "value": "1024x1024" },
+            { "name": "Landscape (1792 × 1024)", "value": "1792x1024" },
+            { "name": "Portrait (1024 × 1792)", "value": "1024x1792" }
+          ]
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "quality",
+          "label": "Image Quality",
+          "options": [
+            { "name": "Standard", "value": "standard" },
+            { "name": "HD", "value": "hd" }
+          ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "apiKey",
+          "label": "OpenAI API Key"
+        }
+      ]
+    }
+  ],
+  "filters": []
+}
