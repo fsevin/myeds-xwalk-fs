@@ -25,17 +25,15 @@ function renderPublishView(block, url, prompt) {
   `;
 }
 
-function renderAuthorView(block, config) {
-  const { prompt, size, quality, apiKey, selectedImageUrl } = config;
+function renderAuthorView(block) {
+  const { prompt, selectedImageUrl } = getConfig(block);
 
   block.innerHTML = `
     <div class="chatgpt-author-ui">
       <div class="chatgpt-author-header">
         <span class="chatgpt-label">DALL·E 3</span>
         <p class="chatgpt-prompt-display">${prompt || '<em>Set a prompt in block properties</em>'}</p>
-        <button class="chatgpt-generate-btn" type="button" ${!prompt ? 'disabled' : ''}>
-          Generate Images
-        </button>
+        <button class="chatgpt-generate-btn" type="button">Generate Images</button>
       </div>
       <div class="chatgpt-status" aria-live="polite"></div>
       <div class="chatgpt-content"></div>
@@ -52,7 +50,13 @@ function renderAuthorView(block, config) {
   const content = block.querySelector('.chatgpt-content');
 
   btn.addEventListener('click', async () => {
-    if (!apiKey) {
+    const cfg = getConfig(block);
+
+    if (!cfg.prompt) {
+      status.innerHTML = '<p class="chatgpt-error">No prompt set — type one in the <strong>Image Prompt</strong> field in the properties panel on the right.</p>';
+      return;
+    }
+    if (!cfg.apiKey) {
       status.innerHTML = '<p class="chatgpt-error">OpenAI API key missing. Set it in block properties or as a &lt;meta name="openai-api-key"&gt; tag.</p>';
       return;
     }
@@ -64,7 +68,7 @@ function renderAuthorView(block, config) {
 
     try {
       const urls = await Promise.all(
-        Array.from({ length: 4 }, () => fetchOneImage(prompt, size, quality, apiKey)),
+        Array.from({ length: 4 }, () => fetchOneImage(cfg.prompt, cfg.size, cfg.quality, cfg.apiKey)),
       );
 
       status.innerHTML = '<p class="chatgpt-pick-label">Select an image to use:</p>';
@@ -72,7 +76,7 @@ function renderAuthorView(block, config) {
         <div class="chatgpt-grid">
           ${urls.map((url, i) => `
             <button class="chatgpt-option" data-url="${url}" type="button">
-              <img src="${url}" alt="${prompt} — option ${i + 1}" loading="lazy">
+              <img src="${url}" alt="${cfg.prompt} — option ${i + 1}" loading="lazy">
               <span class="chatgpt-option-label">Use this</span>
             </button>
           `).join('')}
@@ -85,15 +89,13 @@ function renderAuthorView(block, config) {
           status.innerHTML = '';
           content.innerHTML = `
             <div class="chatgpt-selected-wrap">
-              <img class="chatgpt-selected-img" src="${url}" alt="${prompt}">
+              <img class="chatgpt-selected-img" src="${url}" alt="${cfg.prompt}">
               <div class="chatgpt-selected-actions">
                 <a class="chatgpt-btn-secondary" href="${url}" download="dalle-image.jpg">Download</a>
-                <button class="chatgpt-btn-secondary chatgpt-copy-btn" type="button" data-url="${url}">
-                  Copy URL
-                </button>
+                <button class="chatgpt-btn-secondary chatgpt-copy-btn" type="button" data-url="${url}">Copy URL</button>
               </div>
               <p class="chatgpt-persist-hint">
-                To persist: paste this URL into <strong>Selected Image URL</strong> in block properties.
+                Paste this URL into <strong>Selected Image URL</strong> in block properties to persist on the published page.
               </p>
             </div>
           `;
@@ -109,7 +111,7 @@ function renderAuthorView(block, config) {
             block.querySelector('.chatgpt-author-ui').insertAdjacentHTML('beforeend', `
               <div class="chatgpt-current">
                 <p class="chatgpt-current-label">Current image:</p>
-                <img src="${url}" alt="${prompt}">
+                <img src="${url}" alt="${cfg.prompt}">
               </div>
             `);
           }
@@ -149,5 +151,9 @@ export default function decorate(block) {
     return;
   }
 
-  renderAuthorView(block, config);
+  renderAuthorView(block);
+
+  // Re-render when UE updates block data attributes (e.g. after saving properties)
+  const observer = new MutationObserver(() => renderAuthorView(block));
+  observer.observe(block, { attributes: true, attributeFilter: ['data-prompt', 'data-api-key', 'data-size', 'data-quality', 'data-selected-image-url'] });
 }

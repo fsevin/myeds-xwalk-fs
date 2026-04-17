@@ -11,7 +11,6 @@ function getConfig(block) {
   };
 }
 
-// Detect Universal Editor author environment
 function isAuthorMode() {
   return window !== window.top
     || document.documentElement.classList.contains('aue-body')
@@ -26,17 +25,15 @@ function renderPublishView(block, url, prompt) {
   `;
 }
 
-function renderAuthorView(block, config) {
-  const { prompt, size, apiKey, accessToken, selectedImageUrl } = config;
+function renderAuthorView(block) {
+  const { prompt, selectedImageUrl } = getConfig(block);
 
   block.innerHTML = `
     <div class="firefly-author-ui">
       <div class="firefly-author-header">
         <span class="firefly-label">Firefly Generator</span>
         <p class="firefly-prompt-display">${prompt || '<em>Set a prompt in block properties</em>'}</p>
-        <button class="firefly-generate-btn" type="button" ${!prompt ? 'disabled' : ''}>
-          Generate Images
-        </button>
+        <button class="firefly-generate-btn" type="button">Generate Images</button>
       </div>
       <div class="firefly-status" aria-live="polite"></div>
       <div class="firefly-content"></div>
@@ -53,12 +50,18 @@ function renderAuthorView(block, config) {
   const content = block.querySelector('.firefly-content');
 
   btn.addEventListener('click', async () => {
-    if (!apiKey || !accessToken) {
+    const cfg = getConfig(block);
+
+    if (!cfg.prompt) {
+      status.innerHTML = '<p class="firefly-error">No prompt set — type one in the <strong>Image Prompt</strong> field in the properties panel on the right.</p>';
+      return;
+    }
+    if (!cfg.apiKey || !cfg.accessToken) {
       status.innerHTML = '<p class="firefly-error">API key or access token missing. Set them in block properties or as page &lt;meta&gt; tags.</p>';
       return;
     }
 
-    const [width, height] = size.split('x').map(Number);
+    const [width, height] = cfg.size.split('x').map(Number);
     btn.disabled = true;
     btn.textContent = 'Generating…';
     content.innerHTML = '';
@@ -70,10 +73,10 @@ function renderAuthorView(block, config) {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          'x-api-key': apiKey,
-          Authorization: `Bearer ${accessToken}`,
+          'x-api-key': cfg.apiKey,
+          Authorization: `Bearer ${cfg.accessToken}`,
         },
-        body: JSON.stringify({ prompt, size: { width, height }, numVariations: 4 }),
+        body: JSON.stringify({ prompt: cfg.prompt, size: { width, height }, numVariations: 4 }),
       });
 
       if (!res.ok) {
@@ -89,7 +92,7 @@ function renderAuthorView(block, config) {
         <div class="firefly-grid">
           ${outputs.map(({ image }, i) => `
             <button class="firefly-option" data-url="${image.url}" type="button">
-              <img src="${image.url}" alt="${prompt} — option ${i + 1}" loading="lazy">
+              <img src="${image.url}" alt="${cfg.prompt} — option ${i + 1}" loading="lazy">
               <span class="firefly-option-label">Use this</span>
             </button>
           `).join('')}
@@ -102,15 +105,13 @@ function renderAuthorView(block, config) {
           status.innerHTML = '';
           content.innerHTML = `
             <div class="firefly-selected-wrap">
-              <img class="firefly-selected-img" src="${url}" alt="${prompt}">
+              <img class="firefly-selected-img" src="${url}" alt="${cfg.prompt}">
               <div class="firefly-selected-actions">
                 <a class="firefly-btn-secondary" href="${url}" download="firefly-image.jpg">Download</a>
-                <button class="firefly-btn-secondary firefly-copy-btn" type="button" data-url="${url}">
-                  Copy URL
-                </button>
+                <button class="firefly-btn-secondary firefly-copy-btn" type="button" data-url="${url}">Copy URL</button>
               </div>
               <p class="firefly-persist-hint">
-                To persist: paste this URL into <strong>Selected Image URL</strong> in block properties.
+                Paste this URL into <strong>Selected Image URL</strong> in block properties to persist on the published page.
               </p>
             </div>
           `;
@@ -119,7 +120,6 @@ function renderAuthorView(block, config) {
             e.target.textContent = 'Copied!';
           });
 
-          // update current image preview
           const current = block.querySelector('.firefly-current');
           if (current) {
             current.querySelector('img').src = url;
@@ -127,7 +127,7 @@ function renderAuthorView(block, config) {
             block.querySelector('.firefly-author-ui').insertAdjacentHTML('beforeend', `
               <div class="firefly-current">
                 <p class="firefly-current-label">Current image:</p>
-                <img src="${url}" alt="${prompt}">
+                <img src="${url}" alt="${cfg.prompt}">
               </div>
             `);
           }
@@ -150,5 +150,9 @@ export default function decorate(block) {
     return;
   }
 
-  renderAuthorView(block, config);
+  renderAuthorView(block);
+
+  // Re-render when UE updates block data attributes after saving properties
+  const observer = new MutationObserver(() => renderAuthorView(block));
+  observer.observe(block, { attributes: true, attributeFilter: ['data-prompt', 'data-api-key', 'data-access-token', 'data-size', 'data-selected-image-url'] });
 }
