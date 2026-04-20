@@ -18,7 +18,8 @@
       "fragment",
       "teaser",
       "firefly-generator",
-      "chatgpt-generator"
+      "chatgpt-generator",
+      "weather"
     ]
   },
   {
