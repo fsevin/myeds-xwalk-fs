@@ -56,6 +56,11 @@
           "valueType": "string",
           "name": "textContent_ctaText",
           "label": "CTA label"
+        },{
+          "component": "text",
+          "valueType": "string",
+          "name": "textContent_ctaTextdemo",
+          "label": "demo field - should not be visible in the UI"
         }
       ]
     }
