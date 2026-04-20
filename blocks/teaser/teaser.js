@@ -1,6 +1,7 @@
 export default function decorate(block) {
   const picture = block.querySelector('picture');
   const imageAlt = block.dataset.imageAlt || '';
+  const demoText = block.dataset.demo || '';
 
   const title = block.querySelector('h2, h3, h4');
   const description = block.querySelector('p');
@@ -36,6 +37,13 @@ export default function decorate(block) {
     link.href = cta.href;
     link.textContent = cta.textContent.trim();
     content.appendChild(link);
+  }
+
+  if (demoText) {
+    const demo = document.createElement('p');
+    demo.className = 'teaser-demo-text';
+    demo.textContent = demoText;
+    content.appendChild(demo);
   }
 
   if (imageAlt) {

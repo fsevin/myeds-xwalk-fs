@@ -343,6 +343,12 @@
         "required": true
       },
       {
+        "component": "text",
+        "valueType": "string",
+        "name": "demo",
+        "label": "Demo Text"
+      },
+      {
         "component": "richtext",
         "valueType": "string",
         "name": "textContent_text",
@@ -360,12 +366,6 @@
         "valueType": "string",
         "name": "textContent_ctaText",
         "label": "CTA label"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "textContent_ctaTextdemo",
-        "label": "demo field - should not be visible in the UI"
       }
     ]
   }
