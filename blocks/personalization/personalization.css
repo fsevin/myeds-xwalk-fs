@@ -1,0 +1,34 @@
+.personalization-variant {
+  border: 2px dashed #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.personalization-vip {
+  border-color: #f8872b;
+}
+
+.personalization-standard {
+  border-color: #1473e6;
+}
+
+.personalization-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.personalization-badge.vip {
+  background: #f8872b;
+  color: #fff;
+}
+
+.personalization-badge.standard {
+  background: #1473e6;
+  color: #fff;
+}
