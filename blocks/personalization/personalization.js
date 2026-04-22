@@ -1,7 +1,6 @@
 function isAuthorMode() {
   return window !== window.top
-    || document.documentElement.classList.contains('aue-body')
-    || !!document.querySelector('[data-aue-resource]');
+    || document.documentElement.classList.contains('aue-body');
 }
 
 export default function decorate(block) {
