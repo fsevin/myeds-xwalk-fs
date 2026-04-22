@@ -327,15 +327,7 @@
   },
   {
     "id": "personalization",
-    "fields": [
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "urlParam",
-        "label": "URL Parameter Name",
-        "description": "Query param to check, e.g. 'segment' or 'plan'"
-      }
-    ]
+    "fields": []
   },
   {
     "id": "teaser",
