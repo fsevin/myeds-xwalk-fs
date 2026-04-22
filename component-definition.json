@@ -202,10 +202,7 @@
                 "template": {
                   "name": "Personalization",
                   "model": "personalization",
-                  "urlParam": "segment",
-                  "vipValue": "vip",
-                  "vipContent": "<p>🌟 VIP exclusive content goes here.</p>",
-                  "standardContent": "<p>Standard content for all visitors goes here.</p>"
+                  "urlParam": "segment"
                 }
               }
             }

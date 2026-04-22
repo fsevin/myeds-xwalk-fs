@@ -10,10 +10,7 @@
             "template": {
               "name": "Personalization",
               "model": "personalization",
-              "urlParam": "segment",
-              "vipValue": "vip",
-              "vipContent": "<p>🌟 VIP exclusive content goes here.</p>",
-              "standardContent": "<p>Standard content for all visitors goes here.</p>"
+              "urlParam": "segment"
             }
           }
         }
@@ -30,25 +27,6 @@
           "name": "urlParam",
           "label": "URL Parameter Name",
           "description": "Query param to check, e.g. 'segment' or 'plan'"
-        },
-        {
-          "component": "text",
-          "valueType": "string",
-          "name": "vipValue",
-          "label": "VIP Value",
-          "description": "Param value that activates VIP content, e.g. 'vip' or 'premium'"
-        },
-        {
-          "component": "richtext",
-          "valueType": "string",
-          "name": "vipContent",
-          "label": "VIP Content"
-        },
-        {
-          "component": "richtext",
-          "valueType": "string",
-          "name": "standardContent",
-          "label": "Standard Content"
         }
       ]
     }
